@@ -1,0 +1,13 @@
+{
+  "name": "acp-hub-fake-agent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Minimal fake ACP agent shared by acp-hub smoke tests (no real agent needed)",
+  "type": "module",
+  "scripts": {
+    "start": "node agent.mjs"
+  },
+  "dependencies": {
+    "@agentclientprotocol/sdk": "^1.4.0"
+  }
+}

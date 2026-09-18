@@ -1,0 +1,35 @@
+{
+  "name": "acp-hub-gateway",
+  "version": "0.1.0",
+  "description": "HTTP + SSE gateway that exposes acp-hub adapters to any downstream consumer",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p .",
+    "typecheck": "tsc -p . --noEmit",
+    "clean": "node -e \"fs.rmSync('dist',{recursive:true,force:true})\"",
+    "smoke": "tsx scripts/smoke.mts",
+    "replay-smoke": "tsx scripts/replay-smoke.mts"
+  },
+  "dependencies": {
+    "acp-hub-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

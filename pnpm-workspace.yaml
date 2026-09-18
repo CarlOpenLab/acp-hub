@@ -1,0 +1,6 @@
+packages:
+  - packages/*
+  - examples/*
+allowBuilds:
+  # esbuild's postinstall only validates the platform binary; tsx needs it.
+  esbuild: true
