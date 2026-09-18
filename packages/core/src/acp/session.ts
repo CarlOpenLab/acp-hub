@@ -7,6 +7,8 @@ import type {
   RequestPermissionRequest,
   RequestPermissionResponse,
   SessionNotification,
+  SetSessionConfigOptionRequest,
+  SetSessionConfigOptionResponse,
 } from '@agentclientprotocol/sdk';
 import type { AgentSession, PromptOptions } from '../adapter.js';
 import { AdapterError } from '../errors.js';
@@ -196,6 +198,12 @@ export class AcpSession implements AgentSession {
 
   async setMode(modeId: string): Promise<void> {
     await this.#connection.setSessionMode(this.id, modeId);
+  }
+
+  async setConfigOption(
+    params: SetSessionConfigOptionRequest
+  ): Promise<SetSessionConfigOptionResponse> {
+    return this.#connection.setSessionConfigOption(params);
   }
 
   async dispose(): Promise<void> {

@@ -166,6 +166,7 @@ export class AcpAgentConnection {
           protocolVersion: acp.PROTOCOL_VERSION,
           clientCapabilities: {
             fs: { readTextFile: false, writeTextFile: false },
+            ...this.#options.clientCapabilities,
           },
           clientInfo: this.#options.clientInfo ?? { ...DEFAULT_CLIENT_INFO },
         }),
@@ -238,6 +239,15 @@ export class AcpAgentConnection {
 
   async setSessionMode(sessionId: string, modeId: string): Promise<void> {
     await this.#connection?.setSessionMode({ sessionId, modeId });
+  }
+
+  /** ACP `session/set_config_option` — e.g. switching the selected model. */
+  async setSessionConfigOption(
+    params: acp.SetSessionConfigOptionRequest
+  ): Promise<acp.SetSessionConfigOptionResponse> {
+    const connection = this.#connection;
+    if (!connection) throw new AdapterError('connection_closed', 'Agent connection is not open');
+    return connection.setSessionConfigOption(params);
   }
 
   async authenticate(methodId: string): Promise<void> {

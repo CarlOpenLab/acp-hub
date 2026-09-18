@@ -1,4 +1,11 @@
-import type { LoadSessionResponse, McpServer, NewSessionResponse } from '@agentclientprotocol/sdk';
+import type {
+  ClientCapabilities,
+  LoadSessionResponse,
+  McpServer,
+  NewSessionResponse,
+  SetSessionConfigOptionRequest,
+  SetSessionConfigOptionResponse,
+} from '@agentclientprotocol/sdk';
 import type { AgentCapabilities } from './capabilities.js';
 import type {
   ElicitationResponse,
@@ -22,6 +29,8 @@ export type AdapterLogger = (level: AdapterLogLevel, message: string, extra?: un
 
 export interface AdapterOptions {
   clientInfo?: { name: string; version: string };
+  /** Merged over the default client capabilities at `initialize`. */
+  clientCapabilities?: ClientCapabilities;
   /** Default 30s. */
   initializeTimeoutMs?: number;
   /** SIGTERM → SIGKILL grace when disposing. Default 5s. */
@@ -63,6 +72,14 @@ export interface AgentSession {
   respondElicitation?(requestId: string, response: ElicitationResponse): Promise<void>;
   /** Switch session mode (e.g. plan mode) when the agent advertises modes. */
   setMode?(modeId: string): Promise<void>;
+  /**
+   * Update a session config option (ACP `session/set_config_option`), e.g.
+   * the selected model. Throws AdapterError('unsupported') when the agent
+   * does not advertise the corresponding config option.
+   */
+  setConfigOption?(
+    params: SetSessionConfigOptionRequest
+  ): Promise<SetSessionConfigOptionResponse>;
   /**
    * Inject an interjection into the active turn. Only available when the
    * agent advertises request-transport steering (`_meta.lody.steering` or

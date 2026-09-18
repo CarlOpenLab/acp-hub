@@ -6,6 +6,10 @@ import type {
   CreateSessionOptions,
   AgentSession,
 } from '../adapter.js';
+import type {
+  SetSessionConfigOptionRequest,
+  SetSessionConfigOptionResponse,
+} from '@agentclientprotocol/sdk';
 import type { AgentCapabilities } from '../capabilities.js';
 import { AcpAgentConnection } from './connection.js';
 
@@ -42,6 +46,15 @@ export class AcpAgentAdapter implements AgentAdapter {
   async authenticate(methodId: string): Promise<void> {
     this.#connection ??= new AcpAgentConnection(this.launch, this.options);
     await this.#connection.authenticate(methodId);
+  }
+
+  /** ACP `session/set_config_option` through the live connection. */
+  async setSessionConfigOption(
+    params: SetSessionConfigOptionRequest
+  ): Promise<SetSessionConfigOptionResponse> {
+    const connection = this.#connection;
+    if (!connection) throw new Error('Adapter is not connected');
+    return connection.setSessionConfigOption(params);
   }
 
   async listSessions(options?: { cwd?: string }): Promise<AgentSessionSummary[]> {
