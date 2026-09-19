@@ -63,16 +63,36 @@ export class AcpAgentConnection {
     this.#clientHandler = {
       sessionUpdate: async (params: acp.SessionNotification): Promise<void> => {
         const session = this.#sessions.get(params.sessionId);
-        if (!session) {
-          this.#log('debug', `sessionUpdate for unknown session ${params.sessionId} — dropped`);
+        if (session) {
+          session.handleNotification(params);
           return;
         }
-        session.handleNotification(params);
+        // 路由恢复：有的 agent（实测 oh-my-pi）在 session/load 一个不认识的
+        // 会话 id 时不报错，而是新建内部会话、用另一个 id 推 update。此时把
+        // update 认领给「唯一的、尚未收到任何通知的 resume 会话」。
+        const candidates = [...this.#sessions.values()].filter(
+          (item) => item.adoptable && !item.receivedUpdate
+        );
+        const adopted = candidates.length === 1 ? candidates[0] : undefined;
+        if (adopted) {
+          adopted.adoptAlias(params.sessionId);
+          this.#sessions.set(params.sessionId, adopted);
+          this.#log(
+            'info',
+            `sessionUpdate for unknown session ${params.sessionId} — adopted as alias of ${adopted.id} (resume reassignment)`
+          );
+          adopted.handleNotification(params);
+          return;
+        }
+        this.#log('debug', `sessionUpdate for unknown session ${params.sessionId} — dropped`);
       },
       requestPermission: async (
         params: acp.RequestPermissionRequest
       ): Promise<acp.RequestPermissionResponse> => {
-        const session = this.#sessions.get(params.sessionId);
+        // 命中主 id 或已认领的别名均可
+        const session =
+          this.#sessions.get(params.sessionId) ??
+          [...this.#sessions.values()].find((item) => item.aliases.has(params.sessionId));
         if (!session) return { outcome: { outcome: 'cancelled' } };
         return session.handlePermissionRequest(params);
       },
@@ -213,6 +233,7 @@ export class AcpAgentConnection {
     const sessionId = options.resumeSessionId ?? (response as acp.NewSessionResponse).sessionId;
     const session = new AcpSession(sessionId, response, this, {
       steeringMethod: this.#steeringMethod,
+      adoptable: Boolean(options.resumeSessionId),
     });
     this.#sessions.set(session.id, session);
     return session;

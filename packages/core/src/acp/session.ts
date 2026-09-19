@@ -41,6 +41,15 @@ function abortError(): Error {
 
 export class AcpSession implements AgentSession {
   readonly id: string;
+  /** 额外别名：某些 agent（实测 omp）resume 后用另一个内部 id 推 sessionUpdate，
+   *  连接层路由恢复时把真实 id 登记到这里。 */
+  readonly aliases = new Set<string>();
+  /** 本会话是否由 session/load 恢复创建（可被路由恢复 adoption 候选）。 */
+  readonly adoptable: boolean;
+  /** 是否已收到过该会话的 notification（adoption 只认领零通知的会话）。 */
+  receivedUpdate = false;
+  /** 路由恢复认领新别名时触发（连接层设置，网关层订阅）。 */
+  onAlias?: (alias: string) => void;
   readonly raw: NewSessionResponse | LoadSessionResponse;
   readonly events: AsyncIterable<SessionEvent>;
 
@@ -57,9 +66,10 @@ export class AcpSession implements AgentSession {
     id: string,
     raw: NewSessionResponse | LoadSessionResponse,
     connection: AcpAgentConnection,
-    options: { steeringMethod?: string } = {}
+    options: { steeringMethod?: string; adoptable?: boolean } = {}
   ) {
     this.id = id;
+    this.adoptable = options.adoptable === true;
     this.raw = raw;
     this.#connection = connection;
     this.#steeringMethod = options.steeringMethod;
@@ -79,9 +89,17 @@ export class AcpSession implements AgentSession {
   }
 
   handleNotification(notification: SessionNotification): void {
-    if (notification.sessionId !== this.id) return;
+    if (notification.sessionId !== this.id && !this.aliases.has(notification.sessionId)) return;
+    this.receivedUpdate = true;
     const event = translateNotification(notification);
     if (event) this.emit(event);
+  }
+
+  /** 路由恢复：认领 agent 实际使用的会话 id 作为别名。 */
+  adoptAlias(alias: string): void {
+    if (alias === this.id || this.aliases.has(alias)) return;
+    this.aliases.add(alias);
+    this.onAlias?.(alias);
   }
 
   async handlePermissionRequest(
@@ -215,7 +233,9 @@ export class AcpSession implements AgentSession {
     this.#permissionWaiters.clear();
     this.#rejectClosed(new AdapterError('disposed', 'Session disposed'));
     this.#queue.close();
+    // 主 id 与全部别名都要从连接路由表中摘除
     this.#connection.onSessionDisposed(this.id);
+    for (const alias of this.aliases) this.#connection.onSessionDisposed(alias);
   }
 
   /** Abnormal termination (agent process died). Fail, don't close. */

@@ -60,6 +60,15 @@ export interface PromptOptions {
  */
 export interface AgentSession {
   readonly id: string;
+  /**
+   * Extra session ids the agent actually streams updates under. Some agents
+   * (observed: oh-my-pi) silently reassign the session id on `session/load`
+   * of an unknown id and push updates under the new id; the connection layer
+   * adopts that id as an alias so nothing is dropped.
+   */
+  readonly aliases?: ReadonlySet<string>;
+  /** Fired when the connection adopts a new alias for this session. */
+  onAlias?: (alias: string) => void;
   /** Raw ACP session response (modes, models, config options, `_meta`). */
   readonly raw: NewSessionResponse | LoadSessionResponse;
   readonly events: AsyncIterable<SessionEvent>;
