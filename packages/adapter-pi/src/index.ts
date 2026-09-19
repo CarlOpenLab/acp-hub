@@ -10,19 +10,23 @@ export interface PiLaunchOptions {
 }
 
 /**
- * TODO(unverified): pi 的 ACP 启动参数需要实测确认。
- * pi (badlogic/pi-mono) 提供 ACP 运行模式；Oh My Pi (omp) 是其社区分支，
- * 两者共享同一套 ACP 语义，本包用不同的 launch 预设覆盖。
- * 首次接入时：装好 pi / omp，跑 `examples/quickstart` 验证，按需修正 args。
+ * pi 家族的 ACP 启动预设（2026-09-19 实测确认，open-chat 集成验证）：
+ * - Pi (badlogic/pi-mono)：本地 `pi --mode acp`（stdio JSONL ACP）。
+ *   注意 npm 上 @mariozechner/pi 是无关的 vLLM 工具包，不是本 Pi；
+ *   @earendil-works/pi 尚未发布，因此不走 npx，要求本地安装 CLI。
+ * - Oh My Pi (omp)：本地 `omp acp` 子命令（v18+，stdio ACP，initialize
+ *   握手返回 agentInfo.name = "oh-my-pi"）。
+ *   注意 oh-my-pi npm 包是 pi 的扩展（dist/extension.js），其 bin 是未编译
+ *   的 TS 诊断脚本，不能作为 ACP 服务启动。
  */
 export const PI_ACP_DEFAULT = {
-  command: 'npx',
-  args: ['-y', '@mariozechner/pi', '--mode', 'acp'],
+  command: 'pi',
+  args: ['--mode', 'acp'],
 } as const;
 
 export const OH_MY_PI_ACP_DEFAULT = {
-  command: 'npx',
-  args: ['-y', 'oh-my-pi', '--mode', 'acp'],
+  command: 'omp',
+  args: ['acp'],
 } as const;
 
 export function createPiAdapter(options: PiLaunchOptions = {}): AcpAgentAdapter {
