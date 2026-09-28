@@ -1,0 +1,22 @@
+{
+  "name": "@cc-heart/acp-hub",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "description": "Unified typed adapter layer for coding agents (Claude Code, Codex, pi, DeepSeek) over ACP",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "pnpm -r --if-present run build",
+    "typecheck": "pnpm -r --if-present run typecheck",
+    "clean": "pnpm -r --if-present run clean",
+    "smoke": "pnpm --filter @cc-heart/acp-hub-example-quickstart smoke",
+    "selftest": "pnpm --filter @cc-heart/acp-hub-conformance selftest",
+    "gateway:smoke": "pnpm --filter @cc-heart/acp-hub-gateway smoke",
+    "gateway:replay": "pnpm --filter @cc-heart/acp-hub-gateway replay-smoke"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

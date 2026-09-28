@@ -1,0 +1,26 @@
+{
+  "name": "@cc-heart/acp-hub-example-quickstart",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "smoke": "tsx scripts/smoke.mts",
+    "codex": "tsx src/main.ts codex",
+    "claude": "tsx src/main.ts claude",
+    "pi": "tsx src/main.ts pi",
+    "omp": "tsx src/main.ts oh-my-pi",
+    "deepseek": "tsx src/main.ts deepseek"
+  },
+  "dependencies": {
+    "@cc-heart/acp-hub-adapter-claude": "workspace:*",
+    "@cc-heart/acp-hub-adapter-codex": "workspace:*",
+    "@cc-heart/acp-hub-adapter-deepseek": "workspace:*",
+    "@cc-heart/acp-hub-adapter-pi": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "name": "@cc-heart/acp-hub-adapter-deepseek",
+  "version": "0.1.0",
+  "license": "MIT",
+  "keywords": ["acp","agent-client-protocol","deepseek","coding-agent","adapter"],
+  "homepage": "https://github.com/CarlOpenLab/acp-hub#readme",
+  "bugs": "https://github.com/CarlOpenLab/acp-hub/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CarlOpenLab/acp-hub.git",
+    "directory": "packages/adapter-deepseek"
+  },
+  "description": "DeepSeek agent adapter for acp-hub (ACP over stdio)",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "typecheck": "tsc -p . --noEmit",
+    "clean": "node -e \"fs.rmSync('dist',{recursive:true,force:true})\""
+  },
+  "dependencies": {
+    "@cc-heart/acp-hub-core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
