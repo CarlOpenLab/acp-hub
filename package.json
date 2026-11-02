@@ -1,6 +1,6 @@
 {
   "name": "@cc-heart/acp-hub",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "license": "MIT",
   "private": true,
   "description": "Unified typed adapter layer for coding agents (Claude Code, Codex, pi, DeepSeek) over ACP",
@@ -14,7 +14,9 @@
     "smoke": "pnpm --filter @cc-heart/acp-hub-example-quickstart smoke",
     "selftest": "pnpm --filter @cc-heart/acp-hub-conformance selftest",
     "gateway:smoke": "pnpm --filter @cc-heart/acp-hub-gateway smoke",
-    "gateway:replay": "pnpm --filter @cc-heart/acp-hub-gateway replay-smoke"
+    "gateway:replay": "pnpm --filter @cc-heart/acp-hub-gateway replay-smoke",
+    "release:dry": "pnpm -r publish --access public --no-git-checks --dry-run",
+    "release": "pnpm clean && pnpm build && pnpm -r publish --access public --no-git-checks"
   },
   "devDependencies": {
     "typescript": "^5.9.3"

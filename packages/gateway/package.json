@@ -1,6 +1,6 @@
 {
   "name": "@cc-heart/acp-hub-gateway",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "license": "MIT",
   "keywords": ["acp","agent-client-protocol","gateway","http","sse","coding-agent"],
   "homepage": "https://github.com/CarlOpenLab/acp-hub#readme",

@@ -1,6 +1,6 @@
 {
   "name": "@cc-heart/acp-hub-conformance",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "license": "MIT",
   "private": true,
   "description": "Conformance scenarios for acp-hub adapters: one scripted client, identical assertions for every agent",
